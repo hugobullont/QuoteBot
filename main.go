@@ -4,7 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -67,8 +72,24 @@ func main() {
 		return
 	}
 
-	dg.AddHandler(ready)       //Agregamos un handler con la función Ready.
-	dg.AddHandler(guildCreate) //Agregamos la función guildCreate (Cuando el Bot entra al servidor)
+	dg.AddHandler(ready)         //Agregamos un handler con la función Ready.
+	dg.AddHandler(guildCreate)   //Agregamos la función guildCreate (Cuando el Bot entra al servidor)
+	dg.AddHandler(messageCreate) //Agregamos la función messageCreate (Cuando se reciben mensajes)
+
+	err = dg.Open()
+	if err != nil {
+		fmt.Println("error opening connection,", err)
+		return
+	}
+
+	// Wait here until CTRL-C or other term signal is received.
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
+	// Cleanly close down the Discord session.
+	dg.Close()
 }
 
 //Ready
@@ -82,12 +103,27 @@ func guildCreate(s *discordgo.Session, event *discordgo.GuildCreate) {
 	if event.Guild.Unavailable {
 		return
 	}
-
 	//Añadimos el mensaje que mandará el bot en cada canal que se encuentre. (y tenga permiso)
 	for _, channel := range event.Guild.Channels {
 		if channel.ID == event.Guild.ID {
 			_, _ = s.ChannelMessageSend(channel.ID, "¡QuoteBot está de vuelta! ¡Escribe !help para descubrir las nuevas funciones!")
 			return
 		}
+	}
+}
+
+func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	//Generamos un random
+	s1 := rand.NewSource(time.Now().UnixNano())
+	r1 := rand.New(s1)
+
+	//ignoramos los mensajes que envíe el bot.
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
+
+	if strings.Contains(m.Content, quoteCommand) { //Si el mensaje contiene el comando "exec" envia un mensaje random del quotes.txt
+		number := r1.Intn(len(quotes))
+		s.ChannelMessageSend(m.ChannelID, quotes[number])
 	}
 }
