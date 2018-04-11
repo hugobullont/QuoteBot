@@ -106,7 +106,7 @@ func guildCreate(s *discordgo.Session, event *discordgo.GuildCreate) {
 	//Añadimos el mensaje que mandará el bot en cada canal que se encuentre. (y tenga permiso)
 	for _, channel := range event.Guild.Channels {
 		if channel.ID == event.Guild.ID {
-			_, _ = s.ChannelMessageSend(channel.ID, "¡QuoteBot está de vuelta! ¡Escribe !help para descubrir las nuevas funciones!")
+			_, _ = s.ChannelMessageSend(channel.ID, "¡QuoteBot está de vuelta!")
 			return
 		}
 	}
