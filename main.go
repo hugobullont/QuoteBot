@@ -72,7 +72,7 @@ func main() {
 		return
 	}
 
-	dg.AddHandler(ready)         //Agregamos un handler con la función Ready.
+	dg.AddHandler(ready)         //Agregamos un handler con la función Ready. (Status del Bot)
 	dg.AddHandler(guildCreate)   //Agregamos la función guildCreate (Cuando el Bot entra al servidor)
 	dg.AddHandler(messageCreate) //Agregamos la función messageCreate (Cuando se reciben mensajes)
 
@@ -94,8 +94,8 @@ func main() {
 
 //Ready
 func ready(s *discordgo.Session, event *discordgo.Ready) {
-	// Actualizamos el status del bot. En este caso pondremos !help
-	s.UpdateStatus(0, "!help")
+	// Actualizamos el status del bot.
+	s.UpdateStatus(0, "DOOM")
 }
 
 func guildCreate(s *discordgo.Session, event *discordgo.GuildCreate) {
@@ -127,3 +127,5 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, quotes[number])
 	}
 }
+
+//https://discordapp.com/api/oauth2/authorize?client_id=433765018748846080&permissions=3660864&scope=bot
