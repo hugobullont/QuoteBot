@@ -127,5 +127,3 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, quotes[number])
 	}
 }
-
-//https://discordapp.com/api/oauth2/authorize?client_id=433765018748846080&permissions=3660864&scope=bot
